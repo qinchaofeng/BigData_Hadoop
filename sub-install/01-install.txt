@@ -1,0 +1,142 @@
+#hadoop环境变量:
+
+echo 'export JAVA_HOME=/app/jdk1.8.0_121' >> /etc/profile
+echo 'export CLASS_PATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar' >> /etc/profile
+echo 'export HADOOP_HOME=/app/hadoop-2.7.3' >>/etc/profile
+echo 'export PATH=$PATH:$HADOOP_HOME/bin:$JAVA_HOME/bin:$JAVA_HOME/jre/bin' >> /etc/profile
+source /etc/profile
+
+#下载hive(--no-check-certificate)
+[root@node02 opt]# wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-bin.tar.gz
+#下载storm
+[root@node02 opt]# wget https://mirrors.cnnic.cn/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz --no-check-certificate
+#下载sqoop
+wget https://mirrors.cnnic.cn/apache/sqoop/1.99.7/sqoop-1.99.7-bin-hadoop200.tar.gz --no-check-certificate
+#下载spark
+wget https://mirrors.cnnic.cn/apache/spark/spark-2.1.0/spark-2.1.0-bin-hadoop2.7.tgz --no-check-certificate
+wget https://mirrors.cnnic.cn/apache/spark/spark-2.1.0/spark-2.1.0-bin-without-hadoop.tgz --no-check-certificate
+#下载kafka
+https://mirrors.cnnic.cn/apache/kafka/0.10.1.1/kafka_2.11-0.10.1.1.tgz --no-check-certificate
+#下载flume
+wget https://mirrors.cnnic.cn/apache/flume/1.7.0/apache-flume-1.7.0-bin.tar.gz --no-check-certificate
+
+#############################################################
+配置hadoop
+##目录规划:/app/dirhadoop/
+mkdir -p /app/dirhadoop/tmp
+mkdir -p /app/dirhadoop/dfs/name
+mkdir -p /app/dirhadoop/dfs/data
+## 节点规划: node01 namenode  9000
+## hdfs复制: 2份
+
+#############################################################
+#1.互信 ,本身互信--finish
+#2.jdk
+echo 'export JAVA_HOME=/app/jdk1.8.0_121'  >>/app/hadoop-2.7.3/etc/hadoop/hadoop-env.sh
+
+#vi /app/hadoop-2.7.3/etc/hadoop/core-site.xml
+<configuration>  
+  <property>  
+    <name>fs.default.name</name>  
+    <value>hdfs://node01:9000</value>  
+  </property>  
+  <property>  
+    <name>hadoop.tmp.dir</name>  
+    <value>/app/dirhadoop/tmp</value>  
+  </property>  
+</configuration> 
+
+##scp /app/hadoop-2.7.3/etc/hadoop/core-site.xml node02:/app/hadoop-2.7.3/etc/hadoop/core-site.xml
+##scp /app/hadoop-2.7.3/etc/hadoop/core-site.xml node03:/app/hadoop-2.7.3/etc/hadoop/core-site.xml
+##scp /app/hadoop-2.7.3/etc/hadoop/core-site.xml node04:/app/hadoop-2.7.3/etc/hadoop/core-site.xml
+
+#vi /app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+
+<configuration>  
+  <property>  
+    <name>dfs.replication</name>  
+    <value>2</value>  
+  </property>  
+  <property>  
+    <name>dfs.namenode.name.dir</name>  
+    <value>file:/app/dirhadoop/dfs/name</value>  
+  </property>  
+  <property>  
+    <name>dfs.datanode.data.dir</name>  
+    <value>file:/app/dirhadoop/dfs/data</value>  
+  </property>  
+</configuration> 
+
+scp /app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml node02:/app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml node03:/app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml node04:/app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+
+##mapred-site.xml.template
+#vi /app/hadoop-2.7.3/etc/hadoop/mapred-site.xml
+
+<configuration>  
+  <property>  
+    <name>mapreduce.framework.name</name>  
+    <value>yarn</value>  
+  </property>  
+  <property>  
+    <name>mapreduce.jobhistory.address</name>  
+    <value>Master:10020</value>  
+  </property>  
+  <property>  
+    <name>mapreduce.jobhistory.webapp.address</name>  
+    <value>Master:19888</value>  
+  </property>  
+</configuration> 
+
+scp /app/hadoop-2.7.3/etc/hadoop/mapred-site.xml node02:/app/hadoop-2.7.3/etc/hadoop/mapred-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/mapred-site.xml node03:/app/hadoop-2.7.3/etc/hadoop/mapred-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/mapred-site.xml node04:/app/hadoop-2.7.3/etc/hadoop/mapred-site.xml
+
+
+#vi /app/hadoop-2.7.3/etc/hadoop/yarn-site.xml
+
+<configuration>   
+<!-- Site specific YARN configuration properties -->  
+  <property>  
+    <name>yarn.nodemanager.aux-services</name>  
+    <value>mapreduce_shuffle</value>  
+  </property>  
+  <property>  
+    <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>  
+    <value>org.apache.hadoop.mapred.ShuffleHandler</value>  
+  </property>  
+  <property>  
+    <name>yarn.resourcemanager.address</name>  
+    <value>node01:8032</value>  
+  </property>  
+  <property>  
+    <name>yarn.resourcemanager.scheduler.address</name>  
+    <value>node01:8030</value>  
+  </property>  
+  <property>  
+    <name>yarn.resourcemanager.resource-tracker.address</name>  
+    <value>node01:8031</value>  
+  </property>  
+  <property>  
+    <name>yarn.resourcemanager.admin.address</name>  
+    <value>node01:8033</value>  
+  </property>  
+  <property>  
+    <name>yarn.resourcemanager.webapp.address</name>  
+    <value>node01:8088</value>  
+  </property>  
+</configuration>  
+
+scp /app/hadoop-2.7.3/etc/hadoop/yarn-site.xml node02:/app/hadoop-2.7.3/etc/hadoop/yarn-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/yarn-site.xml node03:/app/hadoop-2.7.3/etc/hadoop/yarn-site.xml
+scp /app/hadoop-2.7.3/etc/hadoop/yarn-site.xml node04:/app/hadoop-2.7.3/etc/hadoop/yarn-site.xml
+
+#vi /app/hadoop-2.7.3/etc/hadoop/slaves
+node02
+node03
+node04
+
+scp /app/hadoop-2.7.3/etc/hadoop/slaves node02:/app/hadoop-2.7.3/etc/hadoop/slaves
+scp /app/hadoop-2.7.3/etc/hadoop/slaves node03:/app/hadoop-2.7.3/etc/hadoop/slaves
+scp /app/hadoop-2.7.3/etc/hadoop/slaves node04:/app/hadoop-2.7.3/etc/hadoop/slaves

@@ -1,0 +1,48 @@
+#在master节点格式化hdfs
+hdfs namenode -format
+
+#log
+17/04/06 17:33:01 INFO namenode.NameNode: STARTUP_MSG: 
+/************************************************************
+STARTUP_MSG: Starting NameNode
+STARTUP_MSG:   host = node01/192.168.85.129
+STARTUP_MSG:   args = [-format]
+STARTUP_MSG:   version = 2.7.3
+
+17/04/06 17:33:01 INFO namenode.NameNode: createNameNode [-format]
+Formatting using clusterid: CID-04d538c6-0041-41b3-8624-25555ae18d3c
+
+17/04/06 17:33:04 INFO common.Storage: Storage directory /app/dirhadoop/dfs/name has been successfully formatted.
+17/04/06 17:33:04 INFO namenode.FSImageFormatProtobuf: Saving image file /app/dirhadoop/dfs/name/current/fsimage.ckpt_0000000000000000000 using no compression
+17/04/06 17:33:05 INFO namenode.FSImageFormatProtobuf: Image file /app/dirhadoop/dfs/name/current/fsimage.ckpt_0000000000000000000 of size 350 bytes saved in 0 seconds.
+17/04/06 17:33:05 INFO namenode.NNStorageRetentionManager: Going to retain 1 images with txid >= 0
+17/04/06 17:33:05 INFO util.ExitUtil: Exiting with status 0
+17/04/06 17:33:05 INFO namenode.NameNode: SHUTDOWN_MSG:
+
+#网址:
+http://192.168.85.129:8088
+
+
+
+#启动hdfs
+#http://192.168.85.129:50070/
+
+[root@node01 hadoop-2.7.3]# /app/hadoop-2.7.3/sbin/start-dfs.sh 
+Starting namenodes on [node01]
+node01: starting namenode, logging to /app/hadoop-2.7.3/logs/hadoop-root-namenode-node01.out
+node02: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node02.out
+node04: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node04.out
+node03: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node03.out
+0.0.0.0: starting secondarynamenode, logging to /app/hadoop-2.7.3/logs/hadoop-root-secondarynamenode-node01.out
+
+
+#启动yarn
+[root@node01 hadoop-2.7.3]# /app/hadoop-2.7.3/sbin/start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-resourcemanager-node01.out
+node04: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node04.out
+node02: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node02.out
+node03: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node03.out
+
+
+
