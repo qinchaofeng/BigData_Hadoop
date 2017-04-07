@@ -32,6 +32,32 @@ ZooKeeper JMX enabled by default
 Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
 Starting zookeeper ... STARTED
 
+5.解释:
+
+tickTime：CS通信心跳数
+Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。tickTime以毫秒为单位
+
+initLimit：LF初始通信时限
+集群中的follower服务器(F)与leader服务器(L)之间初始连接时能容忍的最多心跳数（tickTime的数量）。
+
+syncLimit：LF同步通信时限
+集群中的follower服务器与leader服务器之间请求和应答之间能容忍的最多心跳数（tickTime的数量）
+
+dataDir：数据文件目录
+Zookeeper保存数据的目录，默认情况下，Zookeeper将写数据的日志文件也保存在这个目录里
+
+dataLogDir：日志文件目录
+Zookeeper保存日志文件的目录。
+
+clientPort：客户端连接端口
+客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求
+
+服务器名称与地址：集群信息（服务器编号，服务器地址，LF通信端口，选举端口）
+这个配置项的书写格式比较特殊，规则如下：
+server.N=YYY:A:B  
+
+其中N表示服务器编号，YYY表示服务器的IP地址，A为LF通信端口，表示该服务器与集群中的leader交换的信息的端口。B为选举端口，表示选举新leader时服务器间相互通信的端口（当leader挂掉时，其余服务器会相互通信，选择出新的leader）。一般来说，集群中每个服务器的A端口都是一样，每个服务器的B端口也是一样。
+
 
 二.
 1.环境变量

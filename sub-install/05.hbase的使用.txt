@@ -1,7 +1,258 @@
+一.
 [root@node01 bin]# jps
 15589 RunJar
 16631 Jps
 3801 NameNode
 3979 SecondaryNameNode
 4159 ResourceManager
+
+二.
+[root@node01 bin]# hbase shell
+2017-04-07 15:37:50,958 ERROR [main] zookeeper.RecoverableZooKeeper: ZooKeeper exists failed after 4 attempts
+2017-04-07 15:37:50,968 WARN  [main] zookeeper.ZKUtil: hconnection-0x4acc5dff0x0, quorum=node01:2181,node02:2181,node03:2181,node04:2181, baseZNode=/hbase Unable to set watcher on znode (/hbase/hbaseid)
+org.apache.zookeeper.KeeperException$ConnectionLossException: KeeperErrorCode = ConnectionLoss for /hbase/hbaseid
+
+2017-04-07 15:37:51,000 ERROR [main] zookeeper.ZooKeeperWatcher: hconnection-0x4acc5dff0x0, quorum=node01:2181,node02:2181,node03:2181,node04:2181, baseZNode=/hbase Received unexpected KeeperException, re-throwing exception
+org.apache.zookeeper.KeeperException$ConnectionLossException: KeeperErrorCode = ConnectionLoss for /hbase/hbaseid
+
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.3.0, re359c76e8d9fd0d67396456f92bcbad9ecd7a710, Tue Jan  3 05:31:38 MSK 2017
+
+hbase(main):001:0> 
+
+三.
+#创建一个名为 test 的表，这个表只有一个列为 cf。其中表名、列都要用单引号括起来,并以逗号隔开
+
+create 'test', 'cf'
+2017-04-07 15:42:18,645 ERROR [main] client.ConnectionManager$HConnectionImplementation: Can't get connection to ZooKeeper: KeeperErrorCode = ConnectionLoss for /hbase
+
+Create a table with namespace=ns1 and table qualifier=t1
+  hbase> create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+
+Create a table with namespace=default and table qualifier=t1
+  hbase> create 't1', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+  hbase> # The above in shorthand would be the following:
+  hbase> create 't1', 'f1', 'f2', 'f3'
+  hbase> create 't1', {NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true}
+  hbase> create 't1', {NAME => 'f1', CONFIGURATION => {'hbase.hstore.blockingStoreFiles' => '10'}}
+  
+Table configuration options can be put at the end.
+Examples:
+
+  hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+  hbase> create 't1', {NAME => 'f1', VERSIONS => 5}, METADATA => { 'mykey' => 'myvalue' }
+  hbase> # Optionally pre-split the table into NUMREGIONS, using
+  hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+  hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+  hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', REGION_REPLICATION => 2, CONFIGURATION => {'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'}}
+  hbase> create 't1', {NAME => 'f1', DFS_REPLICATION => 1}
+
+You can also keep around a reference to the created table:
+
+  hbase> t1 = create 't1', 'f1'
+
+Which gives you a reference to the table named 't1', on which you can then
+call methods.
+
+
+4.
+2017-04-07 15:42:18,645 ERROR [main] client.ConnectionManager$HConnectionImplementation: Can't get connection to ZooKeeper: KeeperErrorCode = ConnectionLoss for /hbase
+
+[root@node04 ~]# jps
+8320 Jps
+3478 NodeManager
+3355 DataNode
+
+[root@node03 ~]# jps
+8277 Jps
+3462 NodeManager
+3339 DataNode
+
+[root@node02 conf]# jps
+13781 Jps
+6966 NodeManager
+6843 DataNode
+
+[root@node01 bin]# jps
+16963 Jps
+15589 RunJar
+3801 NameNode
+3979 SecondaryNameNode
+4159 ResourceManager
+
+
+[root@node01 bin]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Starting zookeeper ... FAILED TO START
+
+[root@node02 conf]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Starting zookeeper ... FAILED TO START
+
+
+yum install lsof 
+
+lsof -i:2181
+
+四.
+[root@node01 logs]# cat zookeeper-root-server-node01.out 
+2017-04-07 15:47:22,297 [myid:] - INFO  [main:QuorumPeerConfig@116] - Reading configuration from: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+2017-04-07 15:47:22,304 [myid:] - INFO  [main:QuorumPeerConfig@318] - clientPortAddress is 0.0.0.0/0.0.0.0:2181
+2017-04-07 15:47:22,304 [myid:] - INFO  [main:QuorumPeerConfig@322] - secureClientPort is not set
+2017-04-07 15:47:22,311 [myid:] - ERROR [main:QuorumPeerMain@86] - Invalid config, exiting abnormally
+org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Address unresolved: node01:3888 
+	at org.apache.zookeeper.server.quorum.QuorumPeer$QuorumServer.<init>(QuorumPeer.java:242)
+	at org.apache.zookeeper.server.quorum.flexible.QuorumMaj.<init>(QuorumMaj.java:89)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.createQuorumVerifier(QuorumPeerConfig.java:524)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseDynamicConfig(QuorumPeerConfig.java:557)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.setupQuorumPeerConfig(QuorumPeerConfig.java:530)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseProperties(QuorumPeerConfig.java:353)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:133)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:110)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:79)
+Invalid config, exiting abnormally
+[root@node01 logs]# pwd
+/app/zookeeper-3.5.2-alpha/logs
+
+
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=192.168.85.129:2888:3888
+server.2=192.168.85.130:2888:3888
+server.3=192.168.85.144:2888:3888
+server.4=192.168.85.145:2888:3888
+
+[root@node01 logs]# cat zookeeper-root-server-node01.out 
+2017-04-07 16:01:38,242 [myid:] - INFO  [main:QuorumPeerConfig@116] - Reading configuration from: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+2017-04-07 16:01:38,249 [myid:] - INFO  [main:QuorumPeerConfig@318] - clientPortAddress is 0.0.0.0/0.0.0.0:2181
+2017-04-07 16:01:38,249 [myid:] - INFO  [main:QuorumPeerConfig@322] - secureClientPort is not set
+2017-04-07 16:01:38,255 [myid:] - ERROR [main:QuorumPeerMain@86] - Invalid config, exiting abnormally
+org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Address unresolved: 192.168.85.129:3888 
+	at org.apache.zookeeper.server.quorum.QuorumPeer$QuorumServer.<init>(QuorumPeer.java:242)
+	at org.apache.zookeeper.server.quorum.flexible.QuorumMaj.<init>(QuorumMaj.java:89)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.createQuorumVerifier(QuorumPeerConfig.java:524)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseDynamicConfig(QuorumPeerConfig.java:557)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.setupQuorumPeerConfig(QuorumPeerConfig.java:530)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseProperties(QuorumPeerConfig.java:353)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:133)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:110)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:79)
+
+
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=node01:2888:3888 
+server.2=node02:2888:3888
+server.3=node03:2888:3888
+server.4=node04:2888:3888
+
+改为
+
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.0=node01:2888:3888 
+server.1=node02:2888:3888
+server.2=node03:2888:3888
+server.3=node04:2888:3888
+
+
+[root@node01 zookeeper-3.5.2-alpha]# cat myid
+node01	1
+node02	2
+node03	3
+node04	4
+
+改为:
+
+node01节点echo "1" >/app/zookeeper-3.5.2-alpha/myid
+node02节点echo "2" >/app/zookeeper-3.5.2-alpha/myid
+node03节点echo "3" >/app/zookeeper-3.5.2-alpha/myid
+node04节点echo "4" >/app/zookeeper-3.5.2-alpha/myid
+
+[root@node02 ~]# cat /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=node01:2888:3888 
+server.2=node02:2888:3888
+server.3=node03:2888:3888
+server.4=node04:2888:3888
+
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+
+[root@node01 zookeeper-3.5.2-alpha]# cat /app/zookeeper-3.5.2-alpha/logs/zookeeper-root-server-node01.out 
+2017-04-07 16:21:44,277 [myid:] - INFO  [main:QuorumPeerConfig@116] - Reading configuration from: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+2017-04-07 16:21:44,284 [myid:] - INFO  [main:QuorumPeerConfig@318] - clientPortAddress is 0.0.0.0/0.0.0.0:2181
+2017-04-07 16:21:44,284 [myid:] - INFO  [main:QuorumPeerConfig@322] - secureClientPort is not set
+2017-04-07 16:21:44,290 [myid:] - ERROR [main:QuorumPeerMain@86] - Invalid config, exiting abnormally
+org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Address unresolved: node01:3888 
+	at org.apache.zookeeper.server.quorum.QuorumPeer$QuorumServer.<init>(QuorumPeer.java:242)
+	at org.apache.zookeeper.server.quorum.flexible.QuorumMaj.<init>(QuorumMaj.java:89)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.createQuorumVerifier(QuorumPeerConfig.java:524)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseDynamicConfig(QuorumPeerConfig.java:557)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.setupQuorumPeerConfig(QuorumPeerConfig.java:530)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parseProperties(QuorumPeerConfig.java:353)
+	at org.apache.zookeeper.server.quorum.QuorumPeerConfig.parse(QuorumPeerConfig.java:133)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:110)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:79)
+
+
+这个就是当时copy的时候10.182.243.110:3888  后面带了空格，所以他找不到这个端口，so  一定要注意Linux下的空格
+
+好吧,就是这个问题.
+
+[root@node01 bin]# start-hbase.sh 
+starting master, logging to /app/hbase-1.3.0/logs/hbase-root-master-node01.out
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node04: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node04.out
+node02: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node02.out
+node03: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node03.out
+node04: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+node04: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node02: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+node02: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node03: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+node03: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+
+
+五.
+[root@node03 ~]# jps
+3462 NodeManager
+8729 Jps
+8459 QuorumPeerMain
+3339 DataNode
+
+
+hbase(main):006:0> t1 = create 't1', 'f1'
+
+ERROR: org.apache.hadoop.hbase.PleaseHoldException: Master is initializing
+
+
+create 'test', 'cf'
+
+[root@node01 bin]# start-hbase.sh 
+starting master, logging to /app/hbase-1.3.0/logs/hbase-root-master-node01.out
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node03: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node03.out
+node02: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node02.out
+node04: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node04.out
+
 

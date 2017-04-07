@@ -1,0 +1,78 @@
+[root@node03 ~]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh  status
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Mode: leader
+
+[root@node01 ~]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh  status
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Mode: follower
+
+
+[root@node02 ~]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh  status
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Mode: follower
+
+[root@node04 ~]# /app/zookeeper-3.5.2-alpha/bin/zkServer.sh  status
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Client port found: 2181. Client address: localhost.
+Mode: follower
+
+
+
+[root@node01 ~]# cat /etc/ntp.conf
+restrict default nomodify
+restrict 127.0.0.1
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+driftfile /var/lib/ntp/drift
+broadcastdelay 0.008
+
+
+[root@node02 ~]# ntpdate node01
+ 7 Apr 16:51:55 ntpdate[14684]: step time server 192.168.85.129 offset -38.280736 sec
+
+[root@node03 ~]# ntpdate node01
+ 7 Apr 16:52:04 ntpdate[9019]: step time server 192.168.85.129 offset -40.609528 sec
+
+[root@node04 ~]# ntpdate node01
+ 7 Apr 16:52:14 ntpdate[9042]: step time server 192.168.85.129 offset -38.668817 sec
+
+
+
+hbase(main):001:0> list
+TABLE                                                                                                                                                                         
+0 row(s) in 0.4430 seconds
+
+=> []
+
+
+问题解决了.
+
+hbase(main):002:0>  create 'test', 'cf'
+0 row(s) in 2.7040 seconds
+
+=> Hbase::Table - test
+
+二.网络端口问题:
+
+
+ Hbase master默认端口：60000，http://jxdream1:60010/master-status
+region服务器的默认端口：600030
+
+-- 可以通过 hbase.master.info.port,hbase.regionserver.info.port配置
+
+
+hbase-site.xml添加
+<property>
+  <name>hbase.master.info.port</name>
+  <value>60010</value>
+</property>
+
+
+--解决了.
