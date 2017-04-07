@@ -1,0 +1,7 @@
+[root@node01 bin]# jps
+15589 RunJar
+16631 Jps
+3801 NameNode
+3979 SecondaryNameNode
+4159 ResourceManager
+

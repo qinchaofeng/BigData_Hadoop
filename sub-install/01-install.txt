@@ -6,8 +6,9 @@ echo 'export HADOOP_HOME=/app/hadoop-2.7.3' >>/etc/profile
 echo 'export PATH=$PATH:$HADOOP_HOME/bin:$JAVA_HOME/bin:$JAVA_HOME/jre/bin' >> /etc/profile
 source /etc/profile
 
-#下载hive(--no-check-certificate)
+#下载hive(--no-check-certificate) apache-hive-2.1.1-src.tar.gz
 [root@node02 opt]# wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-bin.tar.gz
+wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-src.tar.gz
 #下载storm
 [root@node02 opt]# wget https://mirrors.cnnic.cn/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz --no-check-certificate
 #下载sqoop

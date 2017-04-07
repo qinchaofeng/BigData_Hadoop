@@ -1,6 +1,0 @@
-hive.metastore.uris：指定hive元数据访问路径，如果为空则是本地模式，否则为远程模式
-           hive.metastore.warehouse.dir：（HDFS上的）数据目录，可以在3个地方保存
-           hive.exec.scratchdir：（HDFS上的）临时文件目录
-           hive.metastore.warehouse.dir默认值是/user/hive/warehouse
-           hive.exec.scratchdir默认值是/tmp/hive-${user.name}
-

@@ -1,0 +1,106 @@
+一.
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.5.2-alpha/zookeeper-3.5.2-alpha.tar.gz   --no-check-certificate
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/1.3.0/hbase-1.3.0-bin.tar.gz --no-check-certificate
+1.
+[root@node01 zookeeper-3.5.2-alpha]# cat myid
+node01	1
+node02	2
+node03	3
+node04	4
+
+2.
+[root@node01 conf]# cat zoo_sample.cfg
+vi zoo.cfg
+
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=node01:2888:3888 
+server.2=node02:2888:3888
+server.3=node03:2888:3888
+server.4=node04:2888:3888
+
+3.scp其他节点:
+
+4.每个节点执行
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /app/zookeeper-3.5.2-alpha/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+
+
+二.
+1.环境变量
+
+echo 'export HBASE_HOME=/app/hbase-1.3.0' >> /etc/profile
+echo 'export PATH=$PATH:$HBASE_HOME/bin' >> /etc/profile
+source /etc/profile
+
+2.hbase-env.sh
+#mkdir logs #Hbase日志目录
+
+echo 'export JAVA_HOME=/app/jdk1.8.0_121' >> conf/hbase-env.sh
+echo 'export HADOOP_HOME=/app/hadoop-2.7.3'>> conf/hbase-env.sh
+echo 'export HBASE_HOME=/app/hbase-1.3.0' >> conf/hbase-env.sh
+echo 'export HBASE_MANAGES_ZK=false ' >> conf/hbase-env.sh
+echo 'export HBASE_LOG_DIR=/app/hbase-1.3.0/logs' >> conf/hbase-env.sh
+
+
+3.hbase-site.xml
+<configuration>  
+  <property>  
+    <name>hbase.rootdir</name>  
+    <value>hdfs://node01:9000/hbase</value>  
+  </property>  
+  <property>  
+     <name>hbase.cluster.distributed</name>  
+     <value>true</value>  
+  </property>  
+  <property>  
+      <name>hbase.master</name>  
+      <value>node01:60000</value>  
+  </property>  
+   <property>  
+    <name>hbase.zookeeper.property.dataDir</name>  
+    <value>/app/zookeeper-3.5.2-alpha</value>  
+  </property>  
+  <property>  
+    <name>hbase.zookeeper.quorum</name>  
+    <value>node01,node02,node03,node04</value>  
+  </property>  
+  <property>  
+    <name>hbase.zookeeper.property.clientPort</name>  
+    <value>2181</value>  
+  </property>  
+</configuration> 
+
+4.配置regionservers
+[root@node01 hbase-1.3.0]# cat conf/regionservers
+node02
+node03
+node04
+
+5.scp到各个节点:
+
+6.启动
+  启动之前得保证ZK和hadoop已经启动
+  [master@master1 hbase]$ bin/start-hbase.sh
+
+[root@node01 bin]# start-hbase.sh
+starting master, logging to /app/hbase-1.3.0/logs/hbase-root-master-node01.out
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node04: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node04.out
+node03: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node03.out
+node02: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node02.out
+
+7.web访问 --fail
+http://192.168.85.129:16010/
+http://192.168.85.129:16030/
+http://192.168.85.129:9000/hbase
+It looks like you are making an HTTP request to a Hadoop IPC port. This is not the correct port for the web interface on this daemon.
+
