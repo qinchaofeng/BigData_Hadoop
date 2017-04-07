@@ -1,0 +1,66 @@
+一.启动hdfs:
+[root@node01 ~]# /app/hadoop-2.7.3/sbin/start-dfs.sh
+Starting namenodes on [node01]
+node01: Warning: Permanently added the RSA host key for IP address '192.168.13.129' to the list of known hosts.
+node01: starting namenode, logging to /app/hadoop-2.7.3/logs/hadoop-root-namenode-node01.out
+node02: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node02.out
+node03: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node03.out
+node04: starting datanode, logging to /app/hadoop-2.7.3/logs/hadoop-root-datanode-node04.out
+Starting secondary namenodes [0.0.0.0]
+0.0.0.0: starting secondarynamenode, logging to /app/hadoop-2.7.3/logs/hadoop-root-secondarynamenode-node01.out
+
+网页查看：
+http://192.168.13.129:50070/dfshealth.html#tab-overview
+
+二.启动yarn
+[root@node01 ~]# /app/hadoop-2.7.3/sbin/start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-resourcemanager-node01.out
+node03: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node03.out
+node02: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node02.out
+node04: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodemanager-node04.out
+
+网页查看：<name>yarn.resourcemanager.webapp.address</name>  
+ 
+http://192.168.13.129:8088/cluster/nodes
+
+三.启动zookeeper
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+ssh node02 '/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start' ##/etc/profile不生效
+
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh status
+
+四.启动hbase
+[root@node01 ~]# start-hbase.sh
+starting master, logging to /app/hbase-1.3.0/logs/hbase-root-master-node01.out
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+node03: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node03.out
+node02: starting regionserver, logging to /app/hbase-1.3.0/logs/hbase-root-regionserver-node02.out
+
+网页查看为：<name>hbase.master.info.port</name>
+http://192.168.13.129:60010/master-status
+
+
+五.启动mysql 元数据库
+[root@node01 ~]# service mysqld restart
+Stopping mysqld:                                           [  OK  ]
+Starting mysqld:                                           [  OK  ]
+[root@node01 ~]# mysql -u root -p
+
+六.启动HIVE
+[root@node01 bin]# hive
+Logging initialized using configuration in jar:file:/app/apache-hive-2.1.1-bin/lib/hive-common-2.1.1.jar!/hive-log4j2.properties Async: true
+Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+hive> show tables;
+OK
+page_view
+test_ds
+
+七.启动hive hwi
+nohup hive --service hwi &
+
+网址为：<name>hive.hwi.listen.host</name><name>hive.hwi.listen.port</name>
+http://192.168.13.129:9999/hwi/show_database.jsp?db=default
+
+

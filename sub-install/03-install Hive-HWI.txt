@@ -185,7 +185,7 @@ wget http://mirror.bit.edu.cn/apache/hive/stable/apache-hive-1.2.0-src.tar.gz
 jar -cvf hive-hwi-2.1.1.war hwi/*
 cp hive-hwi-2.1.1.war /app/apache-hive-2.1.1-bin/lib/
 
-hive-site.xml:
+########################hive-site.xml:
 
 <property>
     <name>hive.hwi.war.file</name>
@@ -194,7 +194,7 @@ hive-site.xml:
 </property>
 <property>
     <name>hive.hwi.listen.host</name>
-    <value>192.168.85.129</value>
+    <value>node01</value>
     <description>This is the host address the Hive Web Interface will listen on</description>
 </property>
 <property>
