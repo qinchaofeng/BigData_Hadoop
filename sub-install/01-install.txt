@@ -7,7 +7,8 @@ echo 'export PATH=$PATH:$HADOOP_HOME/bin:$JAVA_HOME/bin:$JAVA_HOME/jre/bin' >> /
 source /etc/profile
 
 #下载hive(--no-check-certificate) apache-hive-2.1.1-src.tar.gz
-[root@node02 opt]# wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-bin.tar.gz
+[root@node02 opt]# 
+wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-bin.tar.gz
 wget http://mirrors.cnnic.cn/apache/hive/hive-2.1.1/apache-hive-2.1.1-src.tar.gz
 #下载storm
 [root@node02 opt]# wget https://mirrors.cnnic.cn/apache/storm/apache-storm-1.1.0/apache-storm-1.1.0.tar.gz --no-check-certificate
@@ -82,11 +83,11 @@ scp /app/hadoop-2.7.3/etc/hadoop/hdfs-site.xml node04:/app/hadoop-2.7.3/etc/hado
   </property>  
   <property>  
     <name>mapreduce.jobhistory.address</name>  
-    <value>Master:10020</value>  
+    <value>node01:10020</value>  
   </property>  
   <property>  
     <name>mapreduce.jobhistory.webapp.address</name>  
-    <value>Master:19888</value>  
+    <value>node01:19888</value>  
   </property>  
 </configuration> 
 

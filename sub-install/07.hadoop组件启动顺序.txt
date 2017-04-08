@@ -24,6 +24,10 @@ node04: starting nodemanager, logging to /app/hadoop-2.7.3/logs/yarn-root-nodema
  
 http://192.168.13.129:8088/cluster/nodes
 
+三.启动historyserver
+sbin/mr-jobhistory-daemon.sh start historyserver
+http://192.168.13.129:19888/jobhistory
+
 三.启动zookeeper
 /app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
 ssh node02 '/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start' ##/etc/profile不生效
@@ -62,5 +66,4 @@ nohup hive --service hwi &
 
 网址为：<name>hive.hwi.listen.host</name><name>hive.hwi.listen.port</name>
 http://192.168.13.129:9999/hwi/show_database.jsp?db=default
-
 
