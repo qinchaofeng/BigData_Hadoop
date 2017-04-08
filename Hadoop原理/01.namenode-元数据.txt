@@ -1,0 +1,71 @@
+mysql> select * from TBLS;
++--------+-------------+-------+------------------+-------+-----------+-------+-----------+---------------+--------------------+--------------------+
+| TBL_ID | CREATE_TIME | DB_ID | LAST_ACCESS_TIME | OWNER | RETENTION | SD_ID | TBL_NAME  | TBL_TYPE      | VIEW_EXPANDED_TEXT | VIEW_ORIGINAL_TEXT |
++--------+-------------+-------+------------------+-------+-----------+-------+-----------+---------------+--------------------+--------------------+
+|      1 |  1491535550 |     1 |                0 | root  |         0 |     1 | page_view | MANAGED_TABLE | NULL               | NULL               |
+|      2 |  1491535725 |     1 |                0 | root  |         0 |     2 | test_ds   | MANAGED_TABLE | NULL               | NULL               |
++--------+-------------+-------+------------------+-------+-----------+-------+-----------+---------------+--------------------+--------------------+
+2 rows in set (0.00 sec)
+
+mysql> show tables;
++---------------------------+
+| Tables_in_hive            |
++---------------------------+
+| AUX_TABLE                 |
+| BUCKETING_COLS            |
+| CDS                       |
+| COLUMNS_V2                |
+| COMPACTION_QUEUE          |
+| COMPLETED_COMPACTIONS     |
+| COMPLETED_TXN_COMPONENTS  |
+| DATABASE_PARAMS           |
+| DBS                       |
+| DB_PRIVS                  |
+| DELEGATION_TOKENS         |
+| FUNCS                     |
+| FUNC_RU                   |
+| GLOBAL_PRIVS              |
+| HIVE_LOCKS                |
+| IDXS                      |
+| INDEX_PARAMS              |
+| KEY_CONSTRAINTS           |
+| MASTER_KEYS               |
+| NEXT_COMPACTION_QUEUE_ID  |
+| NEXT_LOCK_ID              |
+| NEXT_TXN_ID               |
+| NOTIFICATION_LOG          |
+| NOTIFICATION_SEQUENCE     |
+| NUCLEUS_TABLES            |
+| PARTITIONS                |
+| PARTITION_EVENTS          |
+| PARTITION_KEYS            |
+| PARTITION_KEY_VALS        |
+| PARTITION_PARAMS          |
+| PART_COL_PRIVS            |
+| PART_COL_STATS            |
+| PART_PRIVS                |
+| ROLES                     |
+| ROLE_MAP                  |
+| SDS                       |
+| SD_PARAMS                 |
+| SEQUENCE_TABLE            |
+| SERDES                    |
+| SERDE_PARAMS              |
+| SKEWED_COL_NAMES          |
+| SKEWED_COL_VALUE_LOC_MAP  |
+| SKEWED_STRING_LIST        |
+| SKEWED_STRING_LIST_VALUES |
+| SKEWED_VALUES             |
+| SORT_COLS                 |
+| TABLE_PARAMS              |
+| TAB_COL_STATS             |
+| TBLS                      |
+| TBL_COL_PRIVS             |
+| TBL_PRIVS                 |
+| TXNS                      |
+| TXN_COMPONENTS            |
+| TYPES                     |
+| TYPE_FIELDS               |
+| VERSION                   |
+| WRITE_SET                 |
++---------------------------+
