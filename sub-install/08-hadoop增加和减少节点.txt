@@ -1,0 +1,119 @@
+
+一.HDFS动态增加节点：
+
+sbin/hadoop-daemon.sh start datanode
+sbin/hadoop-daemon.sh start tasktracker
+DEPRECATED: Use of this script to execute mapred command is deprecated.
+Instead use the mapred command for it.
+
+Sorry, the tasktracker command is no longer supported.
+You may find similar functionality with the "yarn" shell command.
+Usage: mapred [--config confdir] [--loglevel loglevel] COMMAND
+       where COMMAND is one of:
+  pipes                run a Pipes job
+  job                  manipulate MapReduce jobs
+  queue                get information regarding JobQueues
+
+(1)启动datanode进程 
+sbin/hadoop-daemon.sh start datanode
+(2)启动nodemanager进程 
+sbin/yarn-daemon.sh start nodemanager 
+(3)均衡block 
+sbin/start-balancer.sh
+
+1.问题：yarn
+http://192.168.13.129:8088/cluster/nodes/?node.label=
+两次出现新增的节点，节点重复，过一会儿会消失
+
+二.hbase增加Region Servers
+(1)
+HMaster节点的配置regionservers
+[root@node01 hbase-1.3.0]# cat conf/regionservers
+node02
+node03
+node04
+
+(2)
+在新节点中通过下面命令启动HRegionServer:
+hbase-daemon.sh start regionserver
+
+(3)验证HRegionServer：
+
+[root@node04 hadoop-2.7.3]# jps
+3890 DataNode
+4615 Jps
+3975 NodeManager
+4456 HRegionServer
+1913 QuorumPeerMain
+
+
+三.hbase删除Region Servers
+hbase-daemon.sh stop regionserver
+
+(1)
+在需要删除的RegionServer上执行以下命令：$ ./bin/hbase-daemon.sh stop regionserver  RegionServer将会关掉所有的region，然后此节点将会在Zookeeper消失。Master注意到了此RegionServer 掉了，它将会重新分配掉的这些Region。在停掉一个节点的时候，注意要关闭Load Balancer，因为Load Balancer可能要和Master的恢复机制争夺停掉的RegionServer
+
+(2)
+hbase(main):001:0> balance_switch false
+true
+
+(3)
+graceful_stop.sh node04
+
+Valid region move targets: 
+node03,16020,1491575709589
+node02,16020,1491575710085
+2017-04-08T00:42:10 Unloaded node04 region(s)
+2017-04-08T00:42:10 Stopping regionserver on node04
+stopping regionserver.........
+
+(4)
+[root@node04 hadoop-2.7.3]# hbase-daemon.sh stop regionserver
+no regionserver to stop because no pid file /tmp/hbase-root-regionserver.pi
+
+(5)
+hbase(main):001:0> balance_switch true
+
+
+四.HDFS移除节点：
+
+(1)添加黑名单文件
+在主节点的Hadoop安装目录目录下添加文件excludes 
+和slaves类似每个节点名一行 添加上要移除的节点名node04
+例如：
+echo 'node04' > excludes
+[root@node01 hadoop-2.7.3]# cat /app/hadoop-2.7.3/excludes 
+node04
+
+(2)修改hdfs-site.xml
+添加下列代码，路径为自己的excludes文件路径
+<property>
+    <name>dfs.hosts.exclude</name>
+    <value>/app/hadoop-2.7.3/excludes</value>
+</property>
+
+(3)修改mapred-site.xml
+添加下列代码，路径为自己的excludes文件路径
+<property>
+    <name>mapred.hosts.exclude</name>
+    <value>/app/hadoop-2.7.3/excludes</value>
+</property>
+
+(4)刷新
+在主节点hadoop安装目录下执行下面命令
+hadoop dfsadmin -refreshNodes
+
+(5)在web上查看节点效果
+node04:50010 (192.168.13.131:50010)	0	Decommission In Progress	7.6 GB
+一开始是Decommission In Progress，正在退役
+node04:50010 (192.168.13.131:50010)	1	Decommissioned	7.6 GB
+执行完后状态修改为Decommissioned，表示已退役
+
+(6)slaves删除node04
+[root@node01 hadoop-2.7.3]# cat /app/hadoop-2.7.3/etc/hadoop/slaves
+node02
+node03
+
+
+
+
