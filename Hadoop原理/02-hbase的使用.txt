@@ -1,0 +1,67 @@
+一.前期准备: 启动HBASE
+
+http://192.168.13.129:19888/jobhistory
+http://192.168.85.129:50070/
+http://192.168.13.129:8088/cluster/nodes
+http://192.168.85.129:60010/master-status
+
+1.启动hadoop:
+vi /app/hadoop-2.7.3/etc/hadoop/slaves删除slave之后,
+/app/hadoop-2.7.3/sbin/start-dfs.sh才启动剔除节点:
+/app/hadoop-2.7.3/sbin/start-yarn.sh相当于sbin/yarn-daemon.sh start nodemanager
+
+2.启动historyserver
+/app/hadoop-2.7.3/sbin/mr-jobhistory-daemon.sh start historyserver
+
+3.各个节点启动zookeeper
+(1)各个节点修改配置文件:
+
+[root@node01 conf]# cat zoo.cfg
+initLimit=5
+syncLimit=2
+clientPort=2181
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+dynamicConfigFile=/app/zookeeper-3.5.2-alpha/conf/zoo.cfg.dynamic.100000000
+[root@node01 conf]# cat zoo.cfg.dynamic.100000000
+server.1=node01:2888:3888:participant
+server.2=node02:2888:3888:participant
+server.3=node03:2888:3888:participant
+#server.4=node04:2888:3888:participant
+
+(2)启动zookeeper:
+
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh start
+/app/zookeeper-3.5.2-alpha/bin/zkServer.sh status
+
+4.启动HBASE
+node04: ssh: connect to host node04 port 22: No route to host
+(1)
+[root@node01 app]# cat /app/hbase-1.3.0/conf/regionservers
+node02
+node03
+(2)启动:
+start-hbase.sh
+
+二.HBASE架构:
+1.HMaster和HRegionServer简介
+
+(1)HMaster的作用：
+为Region server分配region;负责Region server的负载均衡;发现失效的Region server并重新分配其上的region
+HDFS上的垃圾文件回收;处理schema更新请求
+
+(2)HRegionServer作用：
+维护master分配给他的region，处理对这些region的io请求
+负责切分正在运行过程中变的过大的region
+
+(3)client访问HBase上的数据并不需要master参与（寻址访问zookeeper和region server，数据读写访问region server），master仅仅维护table和region的元数据信息（table的元数据信息保存在zookeeper上），负载很低
+
+(4)HRegionServer存取一个子表时，会创建一个HRegion对象，然后对表的每个列族创建一个Store实例，每个Store都会有一个MemStore和0个或多个StoreFile与之对应，每个StoreFile都会对应一个HFile， HFile就是实际的存储文件。因此，一个HRegion有多少个列族就有多少个Store。
+
+
+
+
+
+
+
+
