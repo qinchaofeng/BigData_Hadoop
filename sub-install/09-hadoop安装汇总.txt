@@ -232,6 +232,25 @@ server.4=node04:2888:3888
 
 #server.1,server.2,server.3,server.4和myid相匹配
 
+注:新版的配置文件为:
+
+[root@node01 conf]# vi zoo.cfg
+[root@node01 conf]# vi zoo.cfg.dynamic.100000000 
+[root@node01 conf]# cat zoo.cfg
+initLimit=5
+syncLimit=2
+clientPort=2181
+tickTime=2000
+dataDir=/app/zookeeper-3.5.2-alpha
+dynamicConfigFile=/app/zookeeper-3.5.2-alpha/conf/zoo.cfg.dynamic.100000000
+[root@node01 conf]# cat zoo.cfg.dynamic.100000000
+server.1=node01:2888:3888:participant
+server.2=node02:2888:3888:participant
+server.3=node03:2888:3888:participant
+server.4=node04:2888:3888:participant
+
+
+
 3.Zookeeper复制到其他所有节点：
 scp -r /app/zookeeper-3.5.2-alpha node02：/app
 scp -r /app/zookeeper-3.5.2-alpha node03：/app
