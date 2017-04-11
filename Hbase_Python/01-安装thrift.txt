@@ -58,3 +58,91 @@ wget https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/1.3.0/hbase-1.3.0-src.tar
 [root@node01 hbase]# ls
 thrift  thrift2
 
+五.
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/include:/usr/lib:/usr/lib64:/usr/local/lib:' >> /etc/profile
+source /etc/profile
+
+./configure --prefix=/usr/local --with-php=no --with-lua=no --with-boost=/usr/local/include CXXFLAGS="-g -O2"
+
+
+checking whether g++ supports C++11 features by default... no
+checking whether g++ supports C++11 features with -std=c++11... no
+checking whether g++ supports C++11 features with -std=c++0x... no
+configure: No compiler with C++11 support was found
+
+For information about C++11 support in a specific version of GCC, please see:
+
+GCC 4.3 C++0x Status
+GCC 4.4 C++0x Status
+GCC 4.5 C++0x Status
+GCC 4.6 C++0x Status
+GCC 4.7 C++11 Status
+GCC 4.8 C++11 Status
+
+[root@node01 ~]# rpm -qa | grep gcc
+gcc-c++-4.4.7-18.el6.x86_64
+libgcc-4.4.7-18.el6.x86_64
+gcc-4.4.7-18.el6.x86_64
+
+
+checking for GLIB... no
+yum install glib*
+
+
+Installed:
+  glib-networking.x86_64 0:2.28.6.1-2.4.el6       glib2-devel.x86_64 0:2.28.8-9.el6          glib2-doc.noarch 0:2.28.8-9.el6          glib2-static.x86_64 0:2.28.8-9.el6      
+  glibmm24.x86_64 0:2.22.1-1.el6                  glibmm24-devel.x86_64 0:2.22.1-1.el6       glibmm24-doc.x86_64 0:2.22.1-1.el6      
+
+Dependency Installed:
+  gnutls.x86_64 0:2.12.23-21.el6                libproxy.x86_64 0:0.3.0-10.el6            libproxy-bin.x86_64 0:0.3.0-10.el6    libproxy-python.x86_64 0:0.3.0-10.el6         
+  libsigc++20.x86_64 0:2.2.4.2-1.el6            libsigc++20-devel.x86_64 0:2.2.4.2-1.el6  mailcap.noarch 0:2.1.31-2.el6         perl-Compress-Raw-Zlib.x86_64 1:2.021-144.el6 
+  perl-Compress-Zlib.x86_64 0:2.021-144.el6     perl-HTML-Parser.x86_64 0:3.64-2.el6      perl-HTML-Tagset.noarch 0:3.20-4.el6  perl-IO-Compress-Base.x86_64 0:2.021-144.el6  
+  perl-IO-Compress-Zlib.x86_64 0:2.021-144.el6  perl-URI.noarch 0:1.40-2.el6              perl-XML-Parser.x86_64 0:2.36-7.el6   perl-libwww-perl.noarch 0:5.833-5.el6         
+
+Updated:
+  glib2.x86_64 0:2.28.8-9.el6                                                                                                                                                 
+
+Dependency Updated:
+  perl.x86_64 4:5.10.1-144.el6          perl-Module-Pluggable.x86_64 1:3.90-144.el6     perl-Pod-Escapes.x86_64 1:1.04-144.el6     perl-Pod-Simple.x86_64 1:3.13-144.el6    
+  perl-libs.x86_64 4:5.10.1-144.el6     perl-version.x86_64 3:0.77-144.el6             
+
+
+
+yum install gcc*
+
+Installed:
+  gcc-gfortran.x86_64 0:4.4.7-18.el6   gcc-gnat.x86_64 0:4.4.7-18.el6   gcc-java.x86_64 0:4.4.7-18.el6   gcc-objc.x86_64 0:4.4.7-18.el6   gcc-objc++.x86_64 0:4.4.7-18.el6  
+
+
+
+./configure --prefix=/usr --with-php=no --with-lua=no --with-boost=/usr/local/include --with-headers=/usr/include --with-binutils=/usr/bin
+
+cd /app/thrift-0.10.0/lib/cpp/
+
+g++ -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I../../lib/c_glib/src/thrift -I/usr/local/include/include -I./src -D__STDC_LIMIT_MACROS -Wall -Wextra -pedantic -g -O2 -MT src/thrift/server/libthriftnb_la-TNonblockingServer.lo -MD -MP -MF src/thrift/server/.deps/libthriftnb_la-TNonblockingServer.Tpo -c src/thrift/server/TNonblockingServer.cpp  -fPIC -DPIC -o src/thrift/server/.libs/libthriftnb_la-TNonblockingServer.o
+
+[root@node01 thrift-0.10.0]# cd /app/thrift-0.10.0/lib/cpp/src/thrift/server/.libs/
+[root@node01 .libs]# pwd
+/app/thrift-0.10.0/lib/cpp/src/thrift/server/.libs
+[root@node01 .libs]# ls
+TConnectedClient.o  TServerFramework.o  TServer.o  TSimpleServer.o  TThreadedServer.o  TThreadPoolServer.o
+
+wget http://sourceforge.net/projects/nmon/files/nmon_linux_14i.tar.gz
+
+./configure --prefix=/app/thrift.0.10.0/tmp --with-php=no --with-lua=no --with-boost=/usr/local/include --with-headers=/usr/include --with-binutils=/usr/bin
+
+二.升级GCC
+wget ftp://gnu.mirror.iweb.com/gmp/gmp-4.3.2.tar.gz
+1.gmp
+2.mpfr
+3.mpc
+####export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/mpc-0.8.1/lib:/usr/local/gmp-4.3.2/lib:/usr/local/mpfr-2.4.2/lib
+
+./configure  --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
+
+
+https://downloads.sourceforge.net/project/nmon/lmon16f.c?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fnmon%2F&ts=1491878274&use_mirror=jaist
+
+
+yum -y install glibc-devel.i686 glibc-devel
+./configure --prefix=/usr --build=x86_64-linux --enable-languages=c,c++ --disable-multilib 
