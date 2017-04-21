@@ -1,0 +1,111 @@
+一.配置Hadoop代理访问
+(1)
+--执行命令:
+groupadd -g 1100 sqoop
+useradd -u 1101 -g sqoop -G sqoop sqoop
+passwd sqoop
+
+(2)
+
+因为sqoop访问Hadoop的MapReduce使用的是代理的方式，必须在Hadoop中配置所接受的proxy用户和组
+
+$HADOOP_HOME/etc/hadoop/core-site.xml
+
+<property>
+  <name>hadoop.proxyuser.sqoop2.hosts</name>
+  <value>*</value>
+</property>
+<property>
+  <name>hadoop.proxyuser.sqoop2.groups</name>
+  <value>*</value>
+</property>
+
+(3)
+$SERVER_USER是运行Sqoop2 Server的系统用户，
+
+
+二.配置第三方jar引用路径
+mkdir lib
+echo 'export SQOOP_SERVER_EXTRA_LIB=$SQOOP_HOME/lib'>>/etc/profile
+source /etc/profile
+把mysql的驱动jar文件复制到这个目录下
+
+三.Sqoop服务器配置--sqoop.properties
+
+org.apache.sqoop.submission.engine.mapreduce.configuration.directory=/app/hadoop-2.7.3/etc/hadoop  
+org.apache.sqoop.security.authentication.type=SIMPLE  
+org.apache.sqoop.security.authentication.handler=org.apache.sqoop.security.authentication.SimpleAuthenticationHandler  
+org.apache.sqoop.security.authentication.anonymous=true 
+
+四.bin/sqoop2-tool verify 
+
+五.bin/sqoop2-server start
+
+sqoop2的运行模式不再是sqoop1的一个小工具，而加入了服务器，这样只要能访问到mapreduce配置文件及其开发包，
+sqoop服务器部署在哪里都无所谓，而客户端shell是不需要任何配置的
+
+失败原因:
+
+Caused by: org.apache.sqoop.common.SqoopException: MAPREDUCE_0002:Failure on submission engine initialization - Invalid Hadoop configuration directory (not a directory or permission issues): /app/hadoop-2.7.3/etc/hadoop 
+
+六:su - sqoop
+
+bin/sqoop2-server start
+
+七.
+
+ls $HADOOP_HOME/share/hadoop/common
+ls $HADOOP_HOME/share/hadoop/hdfs
+ls $HADOOP_HOME/share/hadoop/mapreduce
+ls $HADOOP_HOME/share/hadoop/yarn
+
+<property>
+  <name>hadoop.proxyuser.sqoop2.hosts</name>
+  <value>*</value>
+</property>
+<property>
+  <name>hadoop.proxyuser.sqoop2.groups</name>
+  <value>*</value>
+</property>
+
+八.
+[root@node01 bin]# sqoop2-tool upgrade
+Setting conf dir: /app/sqoop-1.99.7-bin-hadoop200/bin/../conf
+Sqoop home directory: /app/sqoop-1.99.7-bin-hadoop200
+Sqoop tool executor:
+	Version: 1.99.7
+	Revision: 435d5e61b922a32d7bce567fe5fb1a9c0d9b1bbb
+	Compiled on Tue Jul 19 16:08:27 PDT 2016 by abefine
+Running tool: class org.apache.sqoop.tools.tool.UpgradeTool
+0    [main] INFO  org.apache.sqoop.core.PropertiesConfigurationProvider  - Starting config file poller thread
+Tool class org.apache.sqoop.tools.tool.UpgradeTool has finished correctly.
+[root@node01 bin]# sqoop2-tool verify
+Setting conf dir: /app/sqoop-1.99.7-bin-hadoop200/bin/../conf
+Sqoop home directory: /app/sqoop-1.99.7-bin-hadoop200
+Sqoop tool executor:
+	Version: 1.99.7
+	Revision: 435d5e61b922a32d7bce567fe5fb1a9c0d9b1bbb
+	Compiled on Tue Jul 19 16:08:27 PDT 2016 by abefine
+Running tool: class org.apache.sqoop.tools.tool.VerifyTool
+0    [main] INFO  org.apache.sqoop.core.SqoopServer  - Initializing Sqoop server.
+21   [main] INFO  org.apache.sqoop.core.PropertiesConfigurationProvider  - Starting config file poller thread
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/app/hadoop-2.7.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/app/apache-hive-2.1.1-bin/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+Verification has failed, please check Server logs for further details.
+Tool class org.apache.sqoop.tools.tool.VerifyTool has failed.
+[root@node01 bin]# 
+
+
+[root@node01 bin]# Exception in thread "main" java.lang.RuntimeException: Failure in server initialization
+	at org.apache.sqoop.core.SqoopServer.initialize(SqoopServer.java:68)
+	at org.apache.sqoop.server.SqoopJettyServer.<init>(SqoopJettyServer.java:67)
+	at org.apache.sqoop.server.SqoopJettyServer.main(SqoopJettyServer.java:177)
+Caused by: org.apache.sqoop.common.SqoopException: MAPREDUCE_0002:Failure on submission engine initialization - Invalid Hadoop configuration directory (not a directory or permission issues): /app/hadoop-2.7.3/etc/hadoop  
+	at org.apache.sqoop.submission.mapreduce.MapreduceSubmissionEngine.initialize(MapreduceSubmissionEngine.java:97)
+	at org.apache.sqoop.driver.JobManager.initialize(JobManager.java:257)
+	at org.apache.sqoop.core.SqoopServer.initialize(SqoopServer.java:64)
+	... 2 more
+
+
