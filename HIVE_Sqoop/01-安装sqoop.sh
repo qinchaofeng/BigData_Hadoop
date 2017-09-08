@@ -38,3 +38,4 @@ ${HADOOP_HOME}/share/hadoop/tools/lib/*.jar,
 ${HADOOP_HOME}/share/hadoop/yarn/*.jar,  
 ${HADOOP_HOME}/share/hadoop/yarn/lib/*.jar,  
 ${HADOOP_HOME}/share/hadoop/httpfs/tomcat/lib/*.jar 
+
