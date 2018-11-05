@@ -1,0 +1,61 @@
+Apache Kafka™ is a distributed streaming platform
+
+It lets you publish and subscribe to streams of records. In this respect it is similar to a message queue or enterprise messaging system.
+It lets you store streams of records in a fault-tolerant way.
+It lets you process streams of records as they occur.
+
+
+It gets used for two broad classes of application:
+
+Building real-time streaming data pipelines that reliably get data between systems or applications
+Building real-time streaming applications that transform or react to the streams of data
+
+First a few concepts:
+
+Kafka is run as a cluster on one or more servers.
+The Kafka cluster stores streams of records in categories called topics.
+Each record consists of a key, a value, and a timestamp.
+
+
+Kafka has four core APIs:
+
+The Producer API allows an application to publish a stream of records to one or more Kafka topics.
+
+The Consumer API allows an application to subscribe to one or more topics and process the stream of records produced to them.
+
+The Streams API allows an application to act as a stream processor, consuming an input stream from one or more topics and producing an output stream to one or more output topics, effectively transforming the input streams to output streams.
+
+The Connector API allows building and running reusable producers or consumers that connect Kafka topics to existing applications or data systems. For example, a connector to a relational database might capture every change to a table.
+
+
+一.Topics and Logs
+For each topic, the Kafka cluster maintains a partitioned log
+Each partition is an ordered, immutable sequence of records that is continually appended to—a structured commit log
+
+
+1.消息队列的时长:
+if the retention policy is set to two days, then for the two days after a record is published, it is available for consumption, after which it will be discarded to free up space
+
+2.分布式:
+The partitions of the log are distributed over the servers in the Kafka cluster with each server handling data and requests for a share of the partitions
+ Each partition is replicated across a configurable number of servers for fault tolerance.
+ Each partition has one server which acts as the "leader" and zero or more servers which act as "followers"
+ The leader handles all read and write requests for the partition while the followers passively replicate the leader
+ If the leader fails, one of the followers will automatically become the new leader.
+
+
+3.消费者
+If all the consumer instances have the same consumer group, then the records will effectively be load balanced over the consumer instances.
+
+If all the consumer instances have different consumer groups, then each record will be broadcast to all the consumer processes.
+
+
+
+二.Kafka as a Messaging System
+
+三.Kafka as a Storage System
+
+四.Kafka for Stream Processing
+However for more complex transformations Kafka provides a fully integrated Streams API. This allows building applications that do non-trivial processing that compute aggregations off of streams or join streams together.
+
+

@@ -1,0 +1,42 @@
+1.ETL的思想
+(1)one-off tools:工具太多.n平方的工具
+(2)kitchen sink tools,一个通用的工具
+(3)stream processing frameworks: 在ETL, 在copy方面不好.
+
+2.kafka思想:
+源和目标解耦和.
+kafka作为data hub,connector hub
+
+3.kafka定义:
+发布订阅系统
+(1)prudcer
+(2)brokers
+(3)consumer
+
+4.kafka核心思想
+顺序读写,高性能
+logs pub_sub
+
+5.可扩展
+topic = partitioned log
+producer 写多个partition
+consumer 读多个partition
+
+6.可扩展的consumption
+consumer group 能有多个consumer 实例;
+每个consumer实例会订阅partition的数据
+
+7.容错的consumption
+brokers会自动重新分配给comsumer group
+
+8.kafka提供底层的api,要自己写连接器
+
+9.kafka connect
+
+10.amqp协议
+
+consumer消费者:读的客户端应用;
+producer:向broker发布消息的客户端应用;
+amqp服务器端broker:接受,消息路由给服务器的队列.
+
+12.

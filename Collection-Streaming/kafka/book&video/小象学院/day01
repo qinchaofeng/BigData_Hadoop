@@ -1,0 +1,103 @@
+http://blog.csdn.net/lizhitao/article/details/39499283
+
+kafka的架构1：
+生产者，进程broker,消费者,zookeeper
+kafka最为数据通道： 数据分析，推荐系统，可以从kafak中获取信息；
+
+kafka架构2：
+topic:producer
+      push-group:多个消费者
+
+kafka架构3：
+broker集群，多个topic分布在不同的broker
+一个topic有多个分区；
+可伸缩架构，高吞吐量，comsumer自动负载均衡；
+支持topic多个分区和副本；
+
+
+cosumer负载均衡：
+8个topic 分区；
+push-group：
+token-group:
+
+一.消息投递原则-稳定性
+1.producer同步发送消息到borker,producer进程crash
+	不会丢失数据
+
+2.producer异步发送到broker,producer进程crash
+	有缓冲区，会丢失部分数据
+
+3.comsumer从broker拉取消息，comsumer挂掉
+	（1）异步消费，会丢数据
+	（2）定期修改comsumer状态到zookeeper
+
+4.broker挂掉
+(1)broker单副本，实时同步到disk的情况
+
+(2)broker单副本，+ pagecache的情况
+	数据丢失
+
+(3)broker多副本，+ pagecache的情况
+	可靠
+
+二.消息稳定和可靠：
+1.高安全级别：
+	broker消息实时持久化磁盘
+	topic的分区设置多副本，producer发送消息到borker需要同步回执ack消息；
+	consumer的消息状态实时持久化到本地，定期更新到zookeeper上；
+
+2.中等安全级别：
+	broker设置消息批量或定期持久化到磁盘
+	topic设置为单副本，producer发送消息到borker需要同步回执ack消息；
+	consumer的消息状态定期更新到zookeeper上；
+
+3.低安全级别
+	broker设置消息批量或定期持久化到磁盘
+	topic设置为单副本,异步发送到broker;
+	consumer的消息状态定期更新到zookeeper上
+
+三.kakfa性能优化：
+1.系统级的优化：
+disk:顺序读写快
+os推测读写：read-ahead & wrtie-ahead;
+append messages:顺序读写msgs数据；
+tcp参数优化：调整缓冲区大小
+sendfile zero copy: 
+	文件->pagecache->user-buffer->scoket buffer->nic buffer;
+	文件->pagecache->NIC buffer;
+
+2.应用级的优化-broker;
+(1)network请求处理流程
+client -- acceptor thread(新建连接) -- 轮询(请求元数据和消息数据) -- procersor thread pool 
+
+-- reqeust queque -- IO thread pool -- file system(log file)
+-- response queue
+
+网络架构优化
+利用mmap和log index 机制,kafka broker 批量但是或定量持久化消息
+
+
+(2)producer的优化
+producer--异步--blocking queque --send thread --批量发送
+											 -- producer pool
+topic按照分区批量发送
+
+(3)comsumer的优化
+client-- thread pool(comsumer thread) -- 请求fetched datachunk -- blocking queque -- fetch thread 1,2 -- broker 1,2
+多线程并行消费消息;
+多线程拉取消息;
+多队列缓存消息;
+comsumer thread 线程数据,有broker数据决定;
+
+四.kafka监控:
+1.monitor:
+	
+
+五.线上实践情况--push系统:
+1.六台虚拟机,4核,8G,一台Producer node,5台comsumer node;
+2.producer的千兆网卡压力比较大;
+3.comsumer耗CPU
+
+六.makfa client的开发:
+
+
