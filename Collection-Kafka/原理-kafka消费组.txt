@@ -1,0 +1,23 @@
+新版本consumer默认将不再保存位移到zookeeper中
+
+kafka0.9以前的consumer是使用Scala编写的，包名结构是kafka.consumer.*，分为high-level consumer和low-level.consumer两种,我们熟知的ConsumerConnector、ZookeeperConsumerConnector以及SimpleConsumer就是这个版本提供的
+
+自0.9版本开始，Kafka提供了java版本的consumer，包名结构是o.a.k.clients.consumer.*，熟知的类包括KafkaConsumer和ConsumerRecord等
+
+组内必然可以有多个消费者或消费者实例(consumer instance)，它们共享一个公共的ID，即group ID。组内的所有消费者协调在一起来消费订阅主题(subscribed topics)的所有分区(partition)
+
+consumer group下可以有一个或多个consumer instance，consumer instance可以是一个进程，也可以是一个线程
+group.id是一个字符串，唯一标识一个consumer group
+consumer group下订阅的topic下的每个分区只能分配给某个group下的一个consumer(当然该分区还可以被分配给其他group)
+
+消费者
+Kafka默认是定期帮你自动提交位移的(enable.auto.commit = true)
+kafka会定期把group消费情况保存起来，做成一个offset map
+
+老版本的位移是提交到zookeeper中的，图就不画了，总之目录结构是：/consumers/<group.id>/offsets/<topic>/<partitionId>
+kafka提供了另一种解决方案：增加__consumeroffsets topic，将offset信息写入这个topic
+__consumer_offsets中的消息保存了每个consumer group某一时刻提交的offset信息
+
+__consumers_offsets topic配置了compact策略，使得它总是能够保存最新的位移信息，既控制了该topic总体的日志容量，也能实现保存最新offset的目的
+
+https://kafka.apache.org/documentation/#compaction

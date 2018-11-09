@@ -1,0 +1,5 @@
+Consumer 
+coordinator
+在0.9以前的client api中，consumer是要依赖Zookeeper的。因为同一个consumer group中的所有consumer需要进行协同，进行下面所讲的rebalance
+在0.9中，不再用zookeeper，而是Kafka集群本身来进行consumer之间的同步
+https://cwiki.apache.org/confluence/display/KAFKA/Kafka+0.9+Consumer+Rewrite+Design#Kafka0.9ConsumerRewriteDesign-Failuredetectionprotocol

@@ -1,0 +1,58 @@
+，新版Kafka已推荐将consumer的位移信息保存在Kafka内部的topic中，即__consumer_offsets topic，并且默认提供了kafka_consumer_groups.sh脚本供用户查看consumer信息。
+
+01.创建topic
+bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic test --replication-factor 3 --partitions 3
+
+2. 使用kafka-console-producer.sh脚本生产消息
+
+　　由于默认没有指定key，所以根据round-robin方式，消息分布到不同的分区上。
+
+3. 验证消息生产成功
+
+bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092,localhost:9093,localhost:9094 --topic test --time -1
+
+4. 创建一个console consumer group
+
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --topic test --from-beginning --new-consumer
+
+5. 获取该consumer group的group id(后面需要根据该id查询它的位移信息)
+
+bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --list --new-consumer
+
+输出： console-consumer-46965  (记住这个id！)
+
+6. 查询__consumer_offsets topic所有内容
+
+0.11.0.0之前版本
+
+bin/kafka-console-consumer.sh --topic __consumer_offsets --zookeeper localhost:2181 --formatter "kafka.coordinator.GroupMetadataManager\$OffsetsMessageFormatter" --consumer.config config/consumer.properties --from-beginning
+
+
+0.11.0.0之后版本(含)
+
+bin/kafka-console-consumer.sh --topic __consumer_offsets --zookeeper localhost:2181 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" --consumer.config config/consumer.properties --from-beginning
+
+7. 计算指定consumer group在__consumer_offsets topic中分区信息
+
+这时候就用到了第5步获取的group.id(本例中是console-consumer-46965)。Kafka会使用下面公式计算该group位移保存在__consumer_offsets的哪个分区上：
+
+Math.abs(groupID.hashCode()) % numPartitions
+
+
+8. 获取指定consumer group的位移信息 
+
+0.11.0.0版本之前
+
+bin/kafka-simple-consumer-shell.sh --topic __consumer_offsets --partition 11 --broker-list localhost:9092,localhost:9093,localhost:9094 --formatter "kafka.coordinator.GroupMetadataManager\$OffsetsMessageFormatter"
+0.11.0.0版本以后(含)
+
+bin/kafka-simple-consumer-shell.sh --topic __consumer_offsets --partition 11 --broker-list localhost:9092,localhost:9093,localhost:9094 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter"
+
+
+
+########################################################################
+cd /opt/cloudera/parcels/KAFKA-2.1.1-1.2.1.1.p0.18/lib/kafka/bin
+cd /opt/cloudera/parcels/KAFKA-2.1.1-1.2.1.1.p0.18/bin
+
+
+./kafka-consumer-groups.sh --bootstrap-server 192.168.11.87:9092,192.168.11.88:9092,192.168.11.89:9092 --list --new-consumer
